@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StructuraQS | Construction Quantity Surveyor & Cost Engineering SaaS</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <!-- Embedded SVG icon set for zero-external dependencies -->
+</head>
+<body class="theme-dark">
+    <!-- TOP GLOBAL APP HEADER -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="brand-badge">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">STRUCTURA<span class="brand-accent">QS</span></span>
+                    <span class="brand-tag">ConTech Enterprise</span>
+                </div>
+            </div>
+
+            <div class="project-selector-wrapper">
+                <span class="selector-label">ACTIVE PROJECT:</span>
+                <select id="project-select" class="project-dropdown" onchange="window.app.switchProject(this.value)">
+                    <!-- Populated dynamically -->
+                </select>
+                <button class="btn btn-sm btn-outline" onclick="window.app.openNewProjectModal()" title="Create New Construction Project">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    New Project
+                </button>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="quick-kpi-pill">
+                <span class="kpi-title">Contract Value:</span>
+                <span class="kpi-val" id="header-contract-sum">$0.00</span>
+            </div>
+            <div class="quick-kpi-pill">
+                <span class="kpi-title">EVM CPI:</span>
+                <span class="kpi-val text-success" id="header-cpi">1.059</span>
+            </div>
+
+            <button class="btn-theme-toggle" onclick="window.app.toggleTheme()" title="Toggle Dark / Light Theme">
+                <svg id="theme-icon-sun" class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg id="theme-icon-moon" class="icon-sm hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+
+            <div class="user-profile-badge">
+                <div class="user-avatar">QS</div>
+                <div class="user-meta">
+                    <span class="user-name">Chief Quantity Surveyor</span>
+                    <span class="user-role">Chartered Cost Engineer</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP LAYOUT: SIDEBAR + WORKSPACE -->
+    <div class="app-body">
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="app-sidebar">
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="dashboard" onclick="window.app.navigateTab('dashboard')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span>Executive Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="qto" onclick="window.app.navigateTab('qto')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M12 2v20M7 7l10 10M17 7L7 17"></path><circle cx="12" cy="12" r="9"></circle></svg>
+                    <span>2D Plan Takeoff (QTO)</span>
+                    <span class="badge-accent">Live CAD</span>
+                </button>
+                <button class="nav-item" data-tab="boq" onclick="window.app.navigateTab('boq')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>BOQ Studio</span>
+                </button>
+                <button class="nav-item" data-tab="bbs" onclick="window.app.navigateTab('bbs')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+                    <span>Bar Bending (BBS)</span>
+                </button>
+                <button class="nav-item" data-tab="calculators" onclick="window.app.navigateTab('calculators')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><path d="M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M8 18h.01M12 18h.01"></path></svg>
+                    <span>Civil Calculators</span>
+                </button>
+                <button class="nav-item" data-tab="rates" onclick="window.app.navigateTab('rates')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    <span>Rate Analysis (DUPR)</span>
+                </button>
+                <button class="nav-item" data-tab="ipc" onclick="window.app.navigateTab('ipc')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                    <span>Valuations & IPC</span>
+                </button>
+                <button class="nav-item" data-tab="variations" onclick="window.app.navigateTab('variations')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                    <span>Variations Register</span>
+                </button>
+                <button class="nav-item" data-tab="evm" onclick="window.app.navigateTab('evm')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    <span>EVM Cost Control</span>
+                </button>
+                <button class="nav-item" data-tab="materials" onclick="window.app.navigateTab('materials')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    <span>Material Price Master</span>
+                </button>
+                <button class="nav-item" data-tab="reports" onclick="window.app.navigateTab('reports')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    <span>Reports & Exports</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="qs-badge-card">
+                    <div class="qs-status-indicator"></div>
+                    <div>
+                        <div class="qs-status-title">Offline Engine Active</div>
+                        <div class="qs-status-desc">IS 1200 / POMI / NRM2</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- WORKSPACE CONTENT AREA -->
+        <main class="app-main-content">
+            
+            <!-- 1. DASHBOARD TAB -->
+            <section id="tab-dashboard" class="tab-pane active">
+                <div class="pane-header">
+                    <div>
+                        <h1 class="pane-title" id="dash-project-name">Skyline Grand Horizon Towers & Plaza</h1>
+                        <p class="pane-subtitle" id="dash-project-subtitle">Commercial & High-Rise Mixed-Use | Sector 62 Financial District</p>
+                    </div>
+                    <div class="pane-actions">
+                        <button class="btn btn-outline" onclick="window.app.exportBOQExcel()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Export Excel BOQ
+                        </button>
+                        <button class="btn btn-primary" onclick="window.app.navigateTab('qto')">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            Launch Plan Takeoff
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI METRICS GRID -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label">TOTAL CONTRACT VALUE</span>
+                            <span class="kpi-icon-wrap bg-blue-dim">
+                                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            </span>
+                        </div>
+                        <div class="kpi-number" id="dash-contract-val">$4,850,000.00</div>
+                        <div class="kpi-meta"><span class="text-info">25 BOQ Line Items</span> in 8 Standard Divisions</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label">CERTIFIED BILLED (CUMULATIVE)</span>
+                            <span class="kpi-icon-wrap bg-emerald-dim">
+                                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </span>
+                        </div>
+                        <div class="kpi-number" id="dash-certified-val">$1,505,500.00</div>
+                        <div class="kpi-meta"><span class="text-success font-semibold">31.04%</span> Complete (IPC #03)</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label">APPROVED VARIATIONS</span>
+                            <span class="kpi-icon-wrap bg-amber-dim">
+                                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                            </span>
+                        </div>
+                        <div class="kpi-number" id="dash-variations-val">+$92,100.00</div>
+                        <div class="kpi-meta"><span class="text-warning font-semibold">3 Orders</span> (+1.90% Net Additions)</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span class="kpi-label">TOTAL REBAR STEEL TAKEOFF</span>
+                            <span class="kpi-icon-wrap bg-purple-dim">
+                                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg>
+                            </span>
+                        </div>
+                        <div class="kpi-number" id="dash-steel-tonnage">11.118 MT</div>
+                        <div class="kpi-meta"><span class="text-purple">11,118.1 kg</span> detailed in BBS Engine</div>
+                    </div>
+                </div>
+
+                <!-- CHARTS ROW -->
+                <div class="charts-row">
+                    <div class="card chart-card-lg">
+                        <div class="card-header-flex">
+                            <div>
+                                <h3 class="card-title">Earned Value S-Curve & Cost Performance</h3>
+                                <p class="card-subtitle">Planned Value (PV) vs Earned Value (EV) vs Actual Cost Incurred (AC)</p>
+                            </div>
+                            <div class="legend-badges">
+                                <span class="legend-item"><span class="dot bg-blue"></span> PV (Planned)</span>
+                                <span class="legend-item"><span class="dot bg-emerald"></span> EV (Earned)</span>
+                                <span class="legend-item"><span class="dot bg-amber"></span> AC (Actual)</span>
+                            </div>
+                        </div>
+                        <div class="canvas-container">
+                            <canvas id="canvas-s-curve" height="260"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card-sm">
+                        <div class="card-header-flex">
+                            <div>
+                                <h3 class="card-title">BOQ Cost Breakdown</h3>
+                                <p class="card-subtitle">Distribution by Work Division</p>
+                            </div>
+                        </div>
+                        <div class="canvas-container flex-center">
+                            <canvas id="canvas-cost-doughnut" width="280" height="240"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECENT TAKEOFFS & DIVISION SUMMARY TABLES -->
+                <div class="dashboard-tables-grid">
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <h3 class="card-title">Division Budget Allocation</h3>
+                            <button class="btn btn-xs btn-outline" onclick="window.app.navigateTab('boq')">View Full BOQ</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Division</th>
+                                        <th>Description</th>
+                                        <th class="text-right">Items</th>
+                                        <th class="text-right">Subtotal</th>
+                                        <th class="text-right">% Share</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dash-divisions-tbody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <h3 class="card-title">Recent 2D Plan Takeoffs (QTO)</h3>
+                            <button class="btn btn-xs btn-outline" onclick="window.app.navigateTab('qto')">Open Takeoff Studio</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Takeoff Element</th>
+                                        <th>Category</th>
+                                        <th class="text-right">Net Quantity</th>
+                                        <th>Unit</th>
+                                        <th>BOQ Link</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dash-takeoff-tbody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 2. 2D PLAN QUANTITY TAKEOFF (QTO) TAB -->
+            <section id="tab-qto" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h1 class="pane-title">2D Vector Blueprint Plan Takeoff (QTO)</h1>
+                        <p class="pane-subtitle">Interactive CAD measurement engine: Calibrate scale, measure areas, wall lengths, column counts and push quantities directly to BOQ.</p>
+                    </div>
+                    <div class="pane-actions">
+                        <label class="btn btn-outline" style="cursor: pointer;">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            Upload Custom Blueprint
+                            <input type="file" id="blueprint-file-input" accept="image/*" style="display:none;" onchange="window.qtoCanvas.loadUserPlan(event)">
+                        </label>
+                        <button class="btn btn-outline" onclick="window.qtoCanvas.loadSamplePlan()">Reset Sample Architectural Plan</button>
+                    </div>
+                </div>
+
+                <div class="qto-workspace-layout">
+                    <!-- CAD CANVAS TOOLBAR & DRAWING BOARD -->
+                    <div class="qto-canvas-pane card">
+                        <!-- TOOLBAR -->
+                        <div class="canvas-toolbar">
+                            <div class="tool-group">
+                                <button class="tool-btn active" id="tool-select" onclick="window.qtoCanvas.setTool('select')" title="Pan & Select">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"></path></svg>
+                                    <span>Select</span>
+                                </button>
+                                <button class="tool-btn" id="tool-calibrate" onclick="window.qtoCanvas.setTool('calibrate')" title="Calibrate Real-World Scale">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="6" x2="2" y2="18"></line><line x1="22" y1="6" x2="22" y2="18"></line></svg>
+                                    <span>Calibrate Scale</span>
+                                </button>
+                            </div>
+
+                            <div class="tool-separator"></div>
+
+                            <div class="tool-group">
+                                <button class="tool-btn" id="tool-polygon" onclick="window.qtoCanvas.setTool('polygon')" title="Measure Polygon Area (Flooring, Raft, Slabs)">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon></svg>
+                                    <span>Area (Polygon)</span>
+                                </button>
+                                <button class="tool-btn" id="tool-polyline" onclick="window.qtoCanvas.setTool('polyline')" title="Measure Wall Length & Plaster (Polyline)">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                                    <span>Wall Length</span>
+                                </button>
+                                <button class="tool-btn" id="tool-rect" onclick="window.qtoCanvas.setTool('rect')" title="Measure Rectangle Box">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+                                    <span>Rect Area</span>
+                                </button>
+                                <button class="tool-btn" id="tool-count" onclick="window.qtoCanvas.setTool('count')" title="Count Point Markers (Columns, Doors, Fixtures)">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+                                    <span>Point Count</span>
+                                </button>
+                            </div>
+
+                            <div class="tool-separator"></div>
+
+                            <div class="tool-group">
+                                <div class="color-picker-wrapper" title="Takeoff Layer Color">
+                                    <input type="color" id="takeoff-color" value="#2563eb" onchange="window.qtoCanvas.currentColor = this.value">
+                                </div>
+                                <button class="tool-btn text-danger" onclick="window.qtoCanvas.clearActiveDrawing()" title="Clear Active In-Progress Shape">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    <span>Cancel Shape</span>
+                                </button>
+                            </div>
+
+                            <div class="canvas-zoom-controls">
+                                <button class="btn-icon" onclick="window.qtoCanvas.zoom(-0.15)" title="Zoom Out">-</button>
+                                <span id="qto-zoom-level" class="zoom-text">100%</span>
+                                <button class="btn-icon" onclick="window.qtoCanvas.zoom(0.15)" title="Zoom In">+</button>
+                                <button class="btn-icon" onclick="window.qtoCanvas.resetView()" title="Fit to Screen">⛶</button>
+                            </div>
+                        </div>
+
+                        <!-- CANVAS DRAWING VIEWPORT -->
+                        <div class="canvas-wrapper" id="canvas-wrapper">
+                            <canvas id="qto-main-canvas"></canvas>
+                            <div class="canvas-instructions-overlay" id="qto-instruction-pill">
+                                💡 Click on plan to place vertices. Double-click or press Enter to complete shape.
+                            </div>
+                            <div class="canvas-scale-badge" id="qto-scale-badge">
+                                Scale: <strong>1.00 m = 80 px</strong> (Calibrated)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAKEOFF PROPERTIES & MEASUREMENT LOG -->
+                    <div class="qto-sidebar-pane">
+                        <!-- ACTIVE MEASUREMENT PANEL -->
+                        <div class="card measurement-property-card">
+                            <h3 class="card-title">Takeoff Measurement Properties</h3>
+                            <div class="form-grid-qto">
+                                <div class="form-group">
+                                    <label class="form-label">Takeoff Name</label>
+                                    <input type="text" id="prop-takeoff-name" class="form-input" placeholder="e.g. Master Bedroom Slab Area">
+                                </div>
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <label class="form-label">Work Category</label>
+                                        <select id="prop-category" class="form-select">
+                                            <option value="Concrete">Concrete (RCC/PCC)</option>
+                                            <option value="Finishes">Finishes & Flooring</option>
+                                            <option value="Masonry">Masonry & Walls</option>
+                                            <option value="Plastering">Plastering & Paint</option>
+                                            <option value="Earthwork">Earthwork & Pit</option>
+                                            <option value="Structure">Structural Columns</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Measured Value</label>
+                                        <div class="input-with-unit">
+                                            <input type="number" id="prop-measured-val" class="form-input font-bold" readonly value="0.00">
+                                            <span id="prop-unit-badge" class="unit-tag">m²</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <label class="form-label">Depth / Height Multiplier (m)</label>
+                                        <input type="number" id="prop-depth" class="form-input" placeholder="e.g. 0.15 for slab, 3.2 for wall" step="0.01" value="0.0" oninput="window.qtoCanvas.recalcNet()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Deduction (Openings)</label>
+                                        <input type="number" id="prop-deduction" class="form-input" placeholder="e.g. Doors/Windows" step="0.1" value="0.0" oninput="window.qtoCanvas.recalcNet()">
+                                    </div>
+                                </div>
+
+                                <div class="net-qty-box">
+                                    <div>
+                                        <span class="net-qty-label">FINAL NET QUANTITY:</span>
+                                        <div class="net-qty-number" id="prop-net-quantity">0.00 <span class="unit" id="prop-final-unit">m²</span></div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Link to BOQ Line Item</label>
+                                    <select id="prop-link-boq" class="form-select">
+                                        <option value="">-- Select BOQ Item to Synchronize --</option>
+                                        <!-- Populated from BOQ -->
+                                    </select>
+                                </div>
+
+                                <button class="btn btn-primary btn-block" onclick="window.qtoCanvas.saveCurrentTakeoff()">
+                                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    Save Takeoff & Push to BOQ
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- LIST OF SAVED TAKEOFFS ON THIS DRAWING -->
+                        <div class="card takeoff-list-card">
+                            <div class="card-header-flex">
+                                <h4 class="card-title">Saved Takeoffs (<span id="takeoff-count-badge">0</span>)</h4>
+                            </div>
+                            <div class="takeoff-items-container" id="saved-takeoff-list">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 3. BILL OF QUANTITIES (BOQ) TAB -->
+            <section id="tab-boq" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h1 class="pane-title">Bill of Quantities (BOQ) Studio</h1>
+                        <p class="pane-subtitle">Standard Method of Measurement (POMI / SMM7 / NRM2 / IS 1200) hierarchical multi-division cost sheets.</p>
+                    </div>
+                    <div class="pane-actions">
+                        <div class="search-box">
+                            <svg class="icon-sm search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="boq-search" class="form-input search-input" placeholder="Search item, code, or specification..." oninput="window.boqGrid.filterTable()">
+                        </div>
+                        <select id="boq-division-filter" class="form-select filter-select" onchange="window.boqGrid.filterTable()">
+                            <option value="ALL">All Divisions (01 - 08)</option>
+                            <!-- Populated dynamically -->
+                        </select>
+                        <button class="btn btn-outline" onclick="window.app.exportBOQExcel()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Export Excel
+                        </button>
+                        <button class="btn btn-primary" onclick="window.boqGrid.openAddItemModal()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Add BOQ Item
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BOQ TABLE CONTAINER -->
+                <div class="card boq-table-card">
+                    <div class="table-responsive">
+                        <table class="data-table boq-table" id="main-boq-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 85px;">Item Code</th>
+                                    <th style="width: 180px;">Division / Section</th>
+                                    <th>Description & Engineering Specification</th>
+                                    <th class="text-center" style="width: 70px;">Unit</th>
+                                    <th class="text-right" style="width: 110px;">Quantity</th>
+                                    <th class="text-right" style="width: 120px;">Unit Rate (<span class="currency-symbol">$</span>)</th>
+                                    <th class="text-right" style="width: 140px;">Total Amount (<span class="currency-symbol">$</span>)</th>
+                                    <th class="text-center" style="width: 100px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="boq-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="boq-grand-total-row">
+                                    <td colspan="4" class="text-right font-bold">TOTAL MEASURED CONTRACT SUM:</td>
+                                    <td colspan="2"></td>
+                                    <td class="text-right font-bold text-accent" id="boq-foot-grand-total">$0.00</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 4. BAR BENDING SCHEDULE (BBS) TAB -->
+            <section id="tab-bbs" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h1 class="pane-title">Bar Bending Schedule (BBS) Engine</h1>
+                        <p class="pane-subtitle">IS 2502 / BS 8666 standard rebar shape calculation, bend deductions, unit weights ($D^2/162.2$) and diameter consumption matrix.</p>
+                    </div>
+                    <div class="pane-actions">
+                        <button class="btn btn-outline" onclick="window.app.exportBBSExcel()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Export BBS Excel
+                        </button>
+                        <button class="btn btn-primary" onclick="window.bbsEngine.openAddBBSModal()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Add Rebar Entry
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BBS SUMMARY CARDS -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">TOTAL STEEL WEIGHT (METRIC TONNES)</div>
+                        <div class="kpi-number text-accent" id="bbs-total-mt">0.000 MT</div>
+                        <div class="kpi-meta"><span id="bbs-total-kg">0.0</span> kg Total Reinforcement</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">TOTAL LINEAR REBAR LENGTH</div>
+                        <div class="kpi-number" id="bbs-total-length">0.0 m</div>
+                        <div class="kpi-meta">Across all RCC members</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">HEAVIEST DIAMETER CONSUMED</div>
+                        <div class="kpi-number text-info" id="bbs-heaviest-dia">Ø 25 mm</div>
+                        <div class="kpi-meta">High Tensile Fe500D Grade</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">ESTIMATED REBAR COST</div>
+                        <div class="kpi-number text-success" id="bbs-est-cost">$0.00</div>
+                        <div class="kpi-meta">@ $780.00 / MT Base Rate</div>
+                    </div>
+                </div>
+
+                <!-- DIAMETER BREAKDOWN CHART & TABLE -->
+                <div class="charts-row">
+                    <div class="card chart-card-lg">
+                        <div class="card-header-flex">
+                            <h3 class="card-title">Diameter-Wise Steel Consumption (MT)</h3>
+                            <span class="text-muted text-xs">Standard sizes: 8, 10, 12, 16, 20, 25, 32 mm</span>
+                        </div>
+                        <div class="canvas-container">
+                            <canvas id="canvas-bbs-bar" height="240"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card-sm">
+                        <div class="card-header-flex">
+                            <h3 class="card-title">Diameter Summary Matrix</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Dia (mm)</th>
+                                        <th class="text-right">Unit Wt (kg/m)</th>
+                                        <th class="text-right">Total Wt (kg)</th>
+                                        <th class="text-right">Weight (MT)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bbs-dia-summary-tbody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DETAILED BBS SCHEDULE TABLE -->
+                <div class="card">
+                    <div class="card-header-flex">
+                        <h3 class="card-title">Detailed Bar Bending Schedule Register</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" id="bbs-main-table">
+                            <thead>
+                                <tr>
+                                    <th>Member Name / Location</th>
+                                    <th>Bar Mark</th>
+                                    <th>Shape Code</th>
+                                    <th class="text-center">Dia (mm)</th>
+                                    <th class="text-right">Cut Length (m)</th>
+                                    <th class="text-center">Members</th>
+                                    <th class="text-center">Bars/Mem</th>
+                                    <th class="text-center">Total Bars</th>
+                                    <th class="text-right">Total Length (m)</th>
+                                    <th class="text-right">Unit Wt (kg/m)</th>
+                                    <th class="text-right">Total Wt (kg)</th>
+                                    <th class="text-right">Weight (MT)</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bbs-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 5. CIVIL CALCULATORS TAB -->
+            <section id="tab-calculators" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h1 class="pane-title">Civil Engineering Takeoff & Mix Calculators</h1>
+                        <p class="pane-subtitle">Instant material quantity calculations for concrete mixes, brickwork/blockwork, plastering, and earthwork.</p>
+                    </div>
+                </div>
+
+                <div class="calc-tabs-wrapper">
+                    <div class="calc-tab-buttons">
+                        <button class="calc-tab-btn active" onclick="window.calculatorsUI.switchCalc('concrete')">🧱 Concrete Mix & Ingredients</button>
+                        <button class="calc-tab-btn" onclick="window.calculatorsUI.switchCalc('brickwork')">🧱 Brickwork & AAC Blockwork</button>
+                        <button class="calc-tab-btn" onclick="window.calculatorsUI.switchCalc('plaster')">🎨 Plastering & Finishes</button>
+                        <button class="calc-tab-btn" onclick="window.calculatorsUI.switchCalc('earthwork')">🚜 Earthwork & Excavation</button>
+                    </div>
+
+                    <!-- 5A. CONCRETE CALCULATOR -->
+                    <div id="calc-pane-concrete" class="calc-content-pane active">
+                        <div class="calc-grid">
+                            <div class="card">
+                                <h3 class="card-title">Concrete Mix Parameters</h3>
+                                <div class="form-grid-qto mt-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Wet Concrete Volume (m³)</label>
+                                        <input type="number" id="calc-conc-vol" class="form-input" value="10.0" step="0.5" oninput="window.calculatorsUI.recalcConcrete()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Grade of Concrete</label>
+                                        <select id="calc-conc-grade" class="form-select" onchange="window.calculatorsUI.recalcConcrete()">
+                                            <option value="M10">M10 (1:3:6 - PCC Mud Mat)</option>
+                                            <option value="M15">M15 (1:2:4 - Plain Concrete Footings)</option>
+                                            <option value="M20" selected>M20 (1:1.5:3 - RCC General Slabs)</option>
+                                            <option value="M25">M25 (1:1:2 - RCC Columns & Heavy Beams)</option>
+                                            <option value="M30">M30 (1:0.75:1.5 - High Strength Raft)</option>
+                                            <option value="M35">M35 (1:0.6:1.2 - High-Rise Commercial)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Dry Volume Factor & Wastage (%)</label>
+                                        <input type="number" id="calc-conc-waste" class="form-input" value="2.0" step="0.5" oninput="window.calculatorsUI.recalcConcrete()">
+                                        <span class="text-xs text-muted">Standard Dry Multiplier = 1.54 applied</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card result-card">
+                                <h3 class="card-title">Required Material Quantities</h3>
+                                <div class="results-grid" id="calc-conc-results">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5B. BRICKWORK CALCULATOR -->
+                    <div id="calc-pane-brickwork" class="calc-content-pane">
+                        <div class="calc-grid">
+                            <div class="card">
+                                <h3 class="card-title">Brickwork / Blockwork Dimensions</h3>
+                                <div class="form-grid-qto mt-4">
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label class="form-label">Wall Length (m)</label>
+                                            <input type="number" id="calc-brick-len" class="form-input" value="15.0" step="0.5" oninput="window.calculatorsUI.recalcBrickwork()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Wall Height (m)</label>
+                                            <input type="number" id="calc-brick-height" class="form-input" value="3.2" step="0.1" oninput="window.calculatorsUI.recalcBrickwork()">
+                                        </div>
+                                    </div>
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label class="form-label">Wall Thickness (m)</label>
+                                            <select id="calc-brick-thk" class="form-select" onchange="window.calculatorsUI.recalcBrickwork()">
+                                                <option value="0.23" selected>0.23 m (230mm / 9" Main Wall)</option>
+                                                <option value="0.115">0.115 m (115mm / 4.5" Partition)</option>
+                                                <option value="0.20">0.20 m (200mm Blockwork)</option>
+                                                <option value="0.15">0.15 m (150mm AAC Block)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Masonry Unit Type</label>
+                                            <select id="calc-brick-type" class="form-select" onchange="window.calculatorsUI.recalcBrickwork()">
+                                                <option value="MODULAR" selected>Modular Clay Brick (190x90x90mm)</option>
+                                                <option value="TRADITIONAL">Traditional Brick (230x115x75mm)</option>
+                                                <option value="AAC_BLOCK">AAC Lightweight Block (600x200x150mm)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label class="form-label">Mortar Mix Ratio</label>
+                                            <select id="calc-brick-mortar" class="form-select" onchange="window.calculatorsUI.recalcBrickwork()">
+                                                <option value="1:4">1:4 (High Strength)</option>
+                                                <option value="1:6" selected>1:6 (Standard Brick Masonry)</option>
+                                                <option value="1:3">1:3 (Parapet / Foundation)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Opening Deductions (m³)</label>
+                                            <input type="number" id="calc-brick-ded" class="form-input" value="1.8" step="0.1" oninput="window.calculatorsUI.recalcBrickwork()">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card result-card">
+                                <h3 class="card-title">Brickwork Material Breakdown</h3>
+                                <div class="results-grid" id="calc-brick-results">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5C. PLASTERING CALCULATOR -->
+                    <div id="calc-pane-plaster" class="calc-content-pane">
+                        <div class="calc-grid">
+                            <div class="card">
+                                <h3 class="card-title">Plastering Area & Specification</h3>
+                                <div class="form-grid-qto mt-4">
+                                    <div class="form-group">
+                                        <label class="form-label">Plaster Surface Area (m²)</label>
+                                        <input type="number" id="calc-plaster-area" class="form-input" value="150.0" step="5.0" oninput="window.calculatorsUI.recalcPlaster()">
+                                    </div>
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label class="form-label">Plaster Thickness</label>
+                                            <select id="calc-plaster-thk" class="form-select" onchange="window.calculatorsUI.recalcPlaster()">
+                                                <option value="6">6mm (Ceiling Plaster)</option>
+                                                <option value="12" selected>12mm (Internal Single Coat)</option>
+                                                <option value="15">15mm (Rough Wall Plaster)</option>
+                                                <option value="20">20mm (External Sand-Faced Double Coat)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Mortar Ratio</label>
+                                            <select id="calc-plaster-ratio" class="form-select" onchange="window.calculatorsUI.recalcPlaster()">
+                                                <option value="1:3">1:3 (External / Ceiling)</option>
+                                                <option value="1:4" selected>1:4 (Standard Internal Plaster)</option>
+                                                <option value="1:6">1:6 (Lean Plaster)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card result-card">
+                                <h3 class="card-title">Plaster Mortar Breakdown</h3>
+                                <div class="results-grid" id="calc-plaster-results">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5D. EARTHWORK CALCULATOR -->
+                    <div id="calc-pane-earthwork" class="calc-content-pane">
+                        <div class="calc-grid">
+                            <div class="card">
+                                <h3 class="card-title">Excavation Pit / Trench Geometry</h3>
+                                <div class="form-grid-qto mt-4">
+                                    <div class="form-row-3">
+                                        <div class="form-group">
+                                            <label class="form-label">Bottom Length (m)</label>
+                                            <input type="number" id="calc-earth-l" class="form-input" value="25.0" step="1.0" oninput="window.calculatorsUI.recalcEarthwork()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Bottom Width (m)</label>
+                                            <input type="number" id="calc-earth-w" class="form-input" value="18.0" step="1.0" oninput="window.calculatorsUI.recalcEarthwork()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Depth (m)</label>
+                                            <input type="number" id="calc-earth-d" class="form-input" value="3.5" step="0.1" oninput="window.calculatorsUI.recalcEarthwork()">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Side Slope (H:V)</label>
+                                        <select id="calc-earth-slope" class="form-select" onchange="window.calculatorsUI.recalcEarthwork()">
+                                            <option value="0.0">0.0:1 (Vertical with shoring)</option>
+                                            <option value="0.5" selected>0.5:1 (Firm soil / soft rock)</option>
+                                            <option value="1.0">1.0:1 (Loose soil 45° angle of repose)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card result-card">
+                                <h3 class="card-title">Excavation & Haulage Volumes</h3>
+                                <div class="results-grid" id="calc-earth-results">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 6. RATE ANALYSIS (DUPR) TAB -->
+            <section id="tab-rates" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h1 class="pane-title">Detailed Unit Price Rate Analysis (DUPR)</h1>
+                        <p class="pane-subtitle">Granular cost buildup from materials, skilled/unskilled labor, plant & equipment, water/sundries, overheads, and profit.</p>
+                    </div>
+                    <div class="pane-actions">
+                        <button class="btn btn-primary" onclick="window.rateAnalysis.openNewRateModal()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Create New Rate Buildup
+                        </button>
+                    </div>
+                </div>
+
+                <div class="rate-analysis-container" id="rate-analysis-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+
+            <!-- 7. VALUATIONS & IPC TAB -->
+            <section id="tab-ipc" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h1 class="pane-title">Interim Payment Certificates (IPC) & Progress Valuations</h1>
+                        <p class="pane-subtitle">Cumulative monthly billing, retention deductions (5%), advance mobilization recovery (10%), and tax withholding.</p>
+                    </div>
+                    <div class="pane-actions">
+                        <button class="btn btn-primary" onclick="window.ipcBilling.openNewIPCModal()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Generate New Interim Certificate (IPC)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ipc-cards-container" id="ipc-list-container">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+
+            <!-- 8. VARIATIONS REGISTER TAB -->
+            <section id="tab-variations" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h1 class="pane-title">Variations (Change Orders) Register</h1>
+                        <p class="pane-subtitle">Contractual changes, scope additions, omissions, star rates, and time extension claims.</p>
+                    </div>
+                    <div class="pane-actions">
+                        <button class="btn btn-primary" onclick="window.ipcBilling.openNewVariationModal()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Log Variation Claim
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>VO Number</th>
+                                    <th>Title & Scope Description</th>
+                                    <th>Category</th>
+                                    <th class="text-right">Claim Amount (<span class="currency-symbol">$</span>)</th>
+                                    <th class="text-center">Time Ext.</th>
+                                    <th class="text-center">Status</th>
+                                    <th>Approved Date</th>
+                                    <th>Justification / Instruction</th>
+                                </tr>
+                            </thead>
+                            <tbody id="variations-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 9. EVM COST CONTROL TAB -->
+            <section id="tab-evm" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h1 class="pane-title">Earned Value Management (EVM) & S-Curve Cost Analytics</h1>
+                        <p class="pane-subtitle">PMI standard Earned Value Analysis: CPI, SPI, EAC, VAC, TCPI and monthly S-Curve tracking.</p>
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">COST PERFORMANCE INDEX (CPI)</div>
+                        <div class="kpi-number text-success" id="evm-cpi-val">1.059</div>
+                        <div class="kpi-meta"><span class="badge-status badge-success">Under Budget</span> (CV: +$135,000)</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">SCHEDULE PERFORMANCE INDEX (SPI)</div>
+                        <div class="kpi-number text-success" id="evm-spi-val">1.008</div>
+                        <div class="kpi-meta"><span class="badge-status badge-success">On Schedule</span> (SV: +$20,000)</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">ESTIMATE AT COMPLETION (EAC)</div>
+                        <div class="kpi-number text-accent" id="evm-eac-val">$4,579,792.00</div>
+                        <div class="kpi-meta">Forecasted Cost at Finish (BAC / CPI)</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">VARIANCE AT COMPLETION (VAC)</div>
+                        <div class="kpi-number text-success" id="evm-vac-val">+$270,208.00</div>
+                        <div class="kpi-meta">Projected Cost Savings for Client</div>
+                    </div>
+                </div>
+
+                <div class="card mt-6">
+                    <div class="card-header-flex">
+                        <h3 class="card-title">Comprehensive Project S-Curve Performance</h3>
+                        <div class="legend-badges">
+                            <span class="legend-item"><span class="dot bg-blue"></span> Planned Value (PV)</span>
+                            <span class="legend-item"><span class="dot bg-emerald"></span> Earned Value (EV)</span>
+                            <span class="legend-item"><span class="dot bg-amber"></span> Actual Cost (AC)</span>
+                        </div>
+                    </div>
+                    <div class="canvas-container" style="height: 320px;">
+                        <canvas id="canvas-evm-full" height="320"></canvas>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 10. MATERIAL PRICE MASTER TAB -->
+            <section id="tab-materials" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h1 class="pane-title">Material Master Price Catalog</h1>
+                        <p class="pane-subtitle">Standard material unit prices, densities, standard wastage allowances, and approved suppliers.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Material Category</th>
+                                    <th>Material Name & Grade</th>
+                                    <th class="text-center">Unit</th>
+                                    <th class="text-right">Standard Rate (<span class="currency-symbol">$</span>)</th>
+                                    <th class="text-right">Density (kg/m³)</th>
+                                    <th class="text-right">Wastage %</th>
+                                    <th>Approved Supplier</th>
+                                </tr>
+                            </thead>
+                            <tbody id="material-master-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 11. REPORTS & EXPORTS TAB -->
+            <section id="tab-reports" class="tab-pane">
+                <div class="pane-header">
+                    <div>
+                        <h1 class="pane-title">Quantity Surveyor Export & Reporting Suite</h1>
+                        <p class="pane-subtitle">Generate client/consultant ready submission documents, multi-tab Excel workbooks, and print packages.</p>
+                    </div>
+                </div>
+
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-icon-box bg-blue-dim">
+                            <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                        </div>
+                        <h3 class="report-title">Full Contract BOQ Workbook (.xlsx)</h3>
+                        <p class="report-desc">Includes Executive Summary, Detailed Itemized BOQ with division subtotals, and Unit Rate Buildup Breakdown sheet.</p>
+                        <button class="btn btn-primary btn-block" onclick="window.app.exportBOQExcel()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Download Excel BOQ
+                        </button>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon-box bg-purple-dim">
+                            <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg>
+                        </div>
+                        <h3 class="report-title">Bar Bending Schedule (BBS) Workbook (.xlsx)</h3>
+                        <p class="report-desc">Complete bar schedule with shape dimensions, cutting length, bend deductions, and diameter-wise matrix.</p>
+                        <button class="btn btn-primary btn-block" onclick="window.app.exportBBSExcel()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Download BBS Schedule
+                        </button>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon-box bg-emerald-dim">
+                            <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                        </div>
+                        <h3 class="report-title">Interim Payment Certificate (IPC) Print Package</h3>
+                        <p class="report-desc">Print-ready PDF/HTML certificate with formal letterhead, contractor submission, engineer certification, and signature seals.</p>
+                        <button class="btn btn-outline btn-block" onclick="window.print()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                            Print Active Report
+                        </button>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon-box bg-amber-dim">
+                            <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>
+                        </div>
+                        <h3 class="report-title">CSV Raw Data Export</h3>
+                        <p class="report-desc">Plain comma-separated data stream for direct database import or ERP ERP integration.</p>
+                        <button class="btn btn-outline btn-block" onclick="window.app.exportBOQCSV()">
+                            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Download Raw CSV
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL DIALOGS CONTAINER -->
+    <div id="modal-backdrop" class="modal-backdrop hidden" onclick="window.app.closeModal()"></div>
+
+    <!-- MODAL: ADD / EDIT BOQ ITEM -->
+    <div id="modal-boq-item" class="modal-dialog hidden">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-boq-title">Add BOQ Line Item</h3>
+            <button class="btn-close" onclick="window.app.closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="boq-form-id">
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label class="form-label">Item Code *</label>
+                    <input type="text" id="boq-form-code" class="form-input" placeholder="e.g. 03.05" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Division *</label>
+                    <select id="boq-form-division" class="form-select">
+                        <option value="01. PRELIMINARIES & GENERAL">01. PRELIMINARIES & GENERAL</option>
+                        <option value="02. SUBSTRUCTURE & EARTHWORK">02. SUBSTRUCTURE & EARTHWORK</option>
+                        <option value="03. SUPERSTRUCTURE RCC">03. SUPERSTRUCTURE RCC</option>
+                        <option value="04. MASONRY & PARTITIONS">04. MASONRY & PARTITIONS</option>
+                        <option value="05. PLASTERING & FINISHES">05. PLASTERING & FINISHES</option>
+                        <option value="06. DOORS, WINDOWS & FACADE">06. DOORS, WINDOWS & FACADE</option>
+                        <option value="07. MECHANICAL, ELECTRICAL & PLUMBING">07. MECHANICAL, ELECTRICAL & PLUMBING</option>
+                        <option value="08. EXTERNAL WORKS & INFRASTRUCTURE">08. EXTERNAL WORKS & INFRASTRUCTURE</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Work Section / Sub-Package</label>
+                <input type="text" id="boq-form-section" class="form-input" placeholder="e.g. Columns RCC M35">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Detailed Description & Technical Specification *</label>
+                <textarea id="boq-form-desc" class="form-textarea" rows="3" placeholder="Provide complete engineering description, grade, mix, curing and testing requirements..." required></textarea>
+            </div>
+
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label class="form-label">Unit *</label>
+                    <input type="text" id="boq-form-unit" class="form-input" placeholder="m3, m2, ton, nos, ls" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quantity *</label>
+                    <input type="number" id="boq-form-qty" class="form-input font-bold" step="0.01" value="1.0" required oninput="window.boqGrid.calcModalTotal()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Unit Rate (<span class="currency-symbol">$</span>) *</label>
+                    <input type="number" id="boq-form-rate" class="form-input font-bold text-accent" step="0.01" value="0.00" required oninput="window.boqGrid.calcModalTotal()">
+                </div>
+            </div>
+
+            <div class="net-qty-box mt-2">
+                <div>
+                    <span class="net-qty-label">TOTAL ITEM AMOUNT:</span>
+                    <div class="net-qty-number" id="boq-modal-calc-total">$0.00</div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="window.app.closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="window.boqGrid.saveBOQItem()">Save BOQ Item</button>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD BBS REBAR ITEM -->
+    <div id="modal-bbs-item" class="modal-dialog modal-lg hidden">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Rebar Entry to Bar Bending Schedule</h3>
+            <button class="btn-close" onclick="window.app.closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label class="form-label">Structural Member Name / Location *</label>
+                    <input type="text" id="bbs-form-member" class="form-input" placeholder="e.g. Column C1 to C8 (Ground to 1st Floor)" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bar Mark *</label>
+                    <input type="text" id="bbs-form-mark" class="form-input" placeholder="e.g. C-VERT-01, B1, T1" required>
+                </div>
+            </div>
+
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label class="form-label">Shape Code (IS/BS) *</label>
+                    <select id="bbs-form-shape" class="form-select" onchange="window.bbsEngine.onShapeChange(this.value)">
+                        <option value="STRAIGHT">00 - Straight Bar</option>
+                        <option value="L_BEND">11 - L-Bend (90° Hook)</option>
+                        <option value="U_SHAPE">21 - U-Shape (180° Hooks)</option>
+                        <option value="CRANK_SLAB">41 - Cranked / Bent-Up Slab Bar (45°)</option>
+                        <option value="RECT_STIRRUP">51 - Rectangular Stirrup / Tie (135° Hooks)</option>
+                        <option value="CIRCULAR_TIE">61 - Circular Column Ring / Link</option>
+                        <option value="CHAIR_BAR">71 - Slab Spacer Chair Bar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bar Diameter (Ø mm) *</label>
+                    <select id="bbs-form-dia" class="form-select" onchange="window.bbsEngine.recalcModal()">
+                        <option value="8">Ø 8 mm (0.395 kg/m)</option>
+                        <option value="10">Ø 10 mm (0.617 kg/m)</option>
+                        <option value="12" selected>Ø 12 mm (0.888 kg/m)</option>
+                        <option value="16">Ø 16 mm (1.578 kg/m)</option>
+                        <option value="20">Ø 20 mm (2.466 kg/m)</option>
+                        <option value="25">Ø 25 mm (3.853 kg/m)</option>
+                        <option value="32">Ø 32 mm (6.313 kg/m)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Steel Grade</label>
+                    <input type="text" class="form-input" value="Fe500D High Yield" readonly>
+                </div>
+            </div>
+
+            <!-- DYNAMIC REBAR SHAPE CANVAS PREVIEW & DIMENSION INPUTS -->
+            <div class="bbs-shape-builder-grid">
+                <div class="bbs-shape-canvas-card">
+                    <canvas id="canvas-bbs-shape-preview" width="280" height="150"></canvas>
+                </div>
+                <div class="bbs-dim-inputs" id="bbs-dim-container">
+                    <!-- Populated dynamically based on shape code -->
+                </div>
+            </div>
+
+            <div class="form-row-2 mt-4">
+                <div class="form-group">
+                    <label class="form-label">Number of Identical Members</label>
+                    <input type="number" id="bbs-form-num-members" class="form-input" value="1" min="1" oninput="window.bbsEngine.recalcModal()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Number of Bars per Member</label>
+                    <input type="number" id="bbs-form-bars-per-member" class="form-input" value="1" min="1" oninput="window.bbsEngine.recalcModal()">
+                </div>
+            </div>
+
+            <div class="kpi-grid mt-4" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="kpi-card" style="padding: 10px;">
+                    <div class="kpi-label">CUTTING LENGTH</div>
+                    <div class="kpi-number text-sm" id="bbs-modal-cut-len">0.00 m</div>
+                </div>
+                <div class="kpi-card" style="padding: 10px;">
+                    <div class="kpi-label">TOTAL BARS</div>
+                    <div class="kpi-number text-sm" id="bbs-modal-total-bars">1</div>
+                </div>
+                <div class="kpi-card" style="padding: 10px;">
+                    <div class="kpi-label">TOTAL WEIGHT</div>
+                    <div class="kpi-number text-sm text-accent" id="bbs-modal-total-wt">0.00 kg</div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="window.app.closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="window.bbsEngine.saveBBSItem()">Save Rebar Schedule</button>
+        </div>
+    </div>
+
+    <!-- MODAL: CREATE PROJECT -->
+    <div id="modal-project" class="modal-dialog hidden">
+        <div class="modal-header">
+            <h3 class="modal-title">Create New Construction Project</h3>
+            <button class="btn-close" onclick="window.app.closeModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Project Name *</label>
+                <input type="text" id="proj-form-name" class="form-input" placeholder="e.g. Marina Bay Heights Residential" required>
+            </div>
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label class="form-label">Project Code *</label>
+                    <input type="text" id="proj-form-code" class="form-input" placeholder="e.g. PRJ-2026-MB01" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Currency Symbol</label>
+                    <input type="text" id="proj-form-currency" class="form-input" value="$" required>
+                </div>
+            </div>
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label class="form-label">Client Organization</label>
+                    <input type="text" id="proj-form-client" class="form-input" placeholder="e.g. Apex Holdings">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Main Contractor</label>
+                    <input type="text" id="proj-form-contractor" class="form-input" placeholder="e.g. Structura Builders">
+                </div>
+            </div>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label class="form-label">Retention %</label>
+                    <input type="number" id="proj-form-retention" class="form-input" value="5.0" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Advance Recovery %</label>
+                    <input type="number" id="proj-form-advance" class="form-input" value="10.0" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tax / GST %</label>
+                    <input type="number" id="proj-form-tax" class="form-input" value="5.0" step="0.5">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="window.app.closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="window.app.submitNewProject()">Create Project</button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- APPLICATION JAVASCRIPT MODULES (PURE NATIVE CLIENT RUNTIME) -->
+    <script src="/static/js/charts.js"></script>
+    <script src="/static/js/qto_canvas.js"></script>
+    <script src="/static/js/boq_grid.js"></script>
+    <script src="/static/js/bbs_engine.js"></script>
+    <script src="/static/js/calculators_ui.js"></script>
+    <script src="/static/js/rate_analysis.js"></script>
+    <script src="/static/js/ipc_billing.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
